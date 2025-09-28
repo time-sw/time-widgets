@@ -1,0 +1,52 @@
+<div id="yt-widget" style="font-family:Arial, sans-serif; background:#1c1c1c; color:#fff; padding:15px; border-radius:10px; width:408px;">
+  <h2 style="color:#ffcc00; text-align:center;">Últimos Videos de @tiempo_videojuegos</h2>
+  <ul id="yt-videos" style="list-style:none; padding:0; margin:0; max-height:400px; overflow-y:auto;"></ul>
+</div>
+
+<script>
+const apiKey = "AIzaSyDOkALkr1QQuP5t1tVXVbtyZWLjLE7mtCA";
+const channelId = "UCLd7iswJ7rlNnOoHpIL1aMw";
+
+async function fetchYouTubeVideos() {
+  try {
+    let res = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${apiKey}&channelId=${channelId}&part=snippet,id&order=date&maxResults=5`);
+    let data = await res.json();
+    let videoList = document.getElementById("yt-videos");
+    videoList.innerHTML = "";
+
+    data.items.forEach(item => {
+      if(item.id.kind !== "youtube#video") return;
+
+      let li = document.createElement("li");
+      li.style.display = "flex";
+      li.style.alignItems = "center";
+      li.style.gap = "10px";
+      li.style.marginBottom = "8px";
+
+      let img = document.createElement("img");
+      img.src = item.snippet.thumbnails.default.url;
+      img.alt = item.snippet.title;
+      img.style.width = "80px";
+      img.style.height = "45px";
+      img.style.borderRadius = "4px";
+
+      let a = document.createElement("a");
+      a.href = `https://www.youtube.com/watch?v=${item.id.videoId}`;
+      a.target = "_blank";
+      a.textContent = item.snippet.title;
+      a.style.color = "#ffcc00";
+      a.style.textDecoration = "none";
+      a.style.flexGrow = "1";
+
+      li.appendChild(img);
+      li.appendChild(a);
+      videoList.appendChild(li);
+    });
+
+  } catch(err) {
+    console.error(err);
+  }
+}
+
+fetchYouTubeVideos();
+</script>
