@@ -3,7 +3,7 @@
     <h2 style="color:#ffcc00; text-align:center;">tiempo_videojuegos</h2>
     <ul id="yt-videos" style="list-style:none; padding:0; margin:0; max-height:500px; overflow-y:auto;"></ul>
     <div style="text-align:center; margin-top:10px;">
-      <button id="prevPage" style="margin-right:10px;">Previous</button>
+      <button id="prevPage" style="margin-right:10px;" disabled>Previous</button>
       <button id="nextPage">Next</button>
     </div>
   </div>
@@ -15,7 +15,7 @@ const channelId = "UCLd7iswJ7rlNnOoHpIL1aMw";
 
 let nextPageToken = "";
 let prevPageTokens = [];
-let currentToken = ""; // Track the current page token
+let currentToken = ""; // Track the current page
 
 async function fetchUploadsPage(pageToken = "") {
   let res = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channelId}&key=${apiKey}`);
@@ -30,11 +30,14 @@ async function fetchUploadsPage(pageToken = "") {
 
   // Store current token for prev page navigation
   if (pageToken) prevPageTokens.push(currentToken);
-
   currentToken = pageToken;
   nextPageToken = playlistData.nextPageToken || "";
 
   displayVideos(playlistData.items);
+
+  // Enable/disable buttons
+  document.getElementById("prevPage").disabled = prevPageTokens.length === 0;
+  document.getElementById("nextPage").disabled = !nextPageToken;
 }
 
 function displayVideos(videos) {
