@@ -12,8 +12,10 @@
 <script>
 const apiKey = "AIzaSyDOkALkr1QQuP5t1tVXVbtyZWLjLE7mtCA";
 const channelId = "UCLd7iswJ7rlNnOoHpIL1aMw";
+
 let nextPageToken = "";
 let prevPageTokens = [];
+let currentToken = ""; // Track the current page token
 
 async function fetchUploadsPage(pageToken = "") {
   let res = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channelId}&key=${apiKey}`);
@@ -26,7 +28,12 @@ async function fetchUploadsPage(pageToken = "") {
   let playlistRes = await fetch(url);
   let playlistData = await playlistRes.json();
 
+  // Store current token for prev page navigation
+  if (pageToken) prevPageTokens.push(currentToken);
+
+  currentToken = pageToken;
   nextPageToken = playlistData.nextPageToken || "";
+
   displayVideos(playlistData.items);
 }
 
@@ -63,15 +70,17 @@ function displayVideos(videos) {
   });
 }
 
+// Initial fetch
 fetchUploadsPage();
 
+// Next Page button
 document.getElementById("nextPage").addEventListener("click", () => {
   if(nextPageToken) {
-    prevPageTokens.push(nextPageToken);
     fetchUploadsPage(nextPageToken);
   }
 });
 
+// Previous Page button
 document.getElementById("prevPage").addEventListener("click", () => {
   if(prevPageTokens.length > 0) {
     const prevToken = prevPageTokens.pop();
@@ -79,3 +88,4 @@ document.getElementById("prevPage").addEventListener("click", () => {
   }
 });
 </script>
+
