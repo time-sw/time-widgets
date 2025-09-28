@@ -1,0 +1,129 @@
+<!-- Wrapper to center widget on page -->
+<div style="display:flex; justify-content:center; margin-top:20px;">
+  <div id="ra-widget" style="font-family:Arial, sans-serif; background:#1c1c1c; color:#fff; padding:15px; border-radius:10px; width:408px;">
+    
+    <!-- Centered RetroAchievements Title -->
+    <h2 style="margin-top:0; margin-bottom:12px; color:#ffcc00; text-align:center;">RetroAchievements</h2>
+
+    <!-- User Header (Left-aligned) -->
+    <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+      <a href="https://retroachievements.org/user/timesweeper" target="_blank">
+        <img src="https://media.retroachievements.org/UserPic/timesweeper.png" 
+             alt="timesweeper" 
+             style="width:50px; height:50px; border-radius:50%; border:2px solid #ffcc00;">
+      </a>
+      <a href="https://retroachievements.org/user/timesweeper" target="_blank" 
+         style="font-size:18px; font-weight:bold; color:#ffcc00; text-decoration:none;">
+        timesweeper
+      </a>
+    </div>
+
+    <p id="ra-points">Loading points...</p>
+    
+    <!-- Recent Games Section -->
+    <div id="ra-recent" style="margin-bottom:12px;">
+      <strong style="display:block; margin-bottom:8px;">Recent Games:</strong>
+      <ul id="ra-games" style="padding-left:0; list-style:none; margin:0;"></ul>
+    </div>
+
+    <!-- Completion Progress Section -->
+    <div id="ra-completion-progress">
+      <strong style="display:block; margin-bottom:8px;">Completion Progress:</strong>
+      <ul id="ra-completion-list" style="padding-left:0; list-style:none; margin:0; max-height:400px; overflow-y:auto;"></ul>
+    </div>
+  </div>
+</div>
+
+<script>
+const raUser = "timesweeper";
+const apiUser = "timesweeper";
+const apiKey  = "AFwNphmb79a93fIY6oUddT37HQaPDvQC";
+const baseUrl = "https://retroachievements.org/API";
+const mediaBaseUrl = "https://media.retroachievements.org/";
+
+async function fetchData() {
+  try {
+    // User summary
+    let summaryRes = await fetch(`${baseUrl}/API_GetUserSummary.php?u=${apiUser}&y=${apiKey}&z=${raUser}`);
+    let summary = await summaryRes.json();
+    document.getElementById("ra-points").innerText = `⭐ Total Points: ${summary.TotalPoints}`;
+
+    // Recent games
+    let gamesRes = await fetch(`${baseUrl}/API_GetUserRecentlyPlayedGames.php?u=${apiUser}&y=${apiKey}&z=${raUser}`);
+    let games = await gamesRes.json();
+    let gameList = document.getElementById("ra-games");
+    gameList.innerHTML = "";
+
+    games.slice(0, 5).forEach(g => {
+      let li = document.createElement("li");
+      li.style.display = "flex";
+      li.style.alignItems = "center";
+      li.style.gap = "8px";
+      li.style.padding = "4px 0";
+      li.style.borderBottom = "1px solid #333";
+
+      let img = document.createElement("img");
+      img.src = mediaBaseUrl + g.ImageIcon;
+      img.alt = g.Title;
+      img.style.width = "32px";
+      img.style.height = "32px";
+      img.style.borderRadius = "4px";
+
+      let span = document.createElement("span");
+      span.textContent = g.Title;
+
+      li.appendChild(img);
+      li.appendChild(span);
+      gameList.appendChild(li);
+    });
+
+    // Completion progress
+    let progressRes = await fetch(`${baseUrl}/API_GetUserCompletionProgress.php?u=${apiUser}&y=${apiKey}&z=${raUser}`);
+    let progress = await progressRes.json();
+    let progressList = document.getElementById("ra-completion-list");
+    progressList.innerHTML = "";
+
+    // Sort games by completion ratio descending
+    progress.Results.sort((a, b) => (b.NumAwarded / b.MaxPossible) - (a.NumAwarded / a.MaxPossible));
+
+    progress.Results.forEach(g => {
+      let li = document.createElement("li");
+      li.style.display = "flex";
+      li.style.alignItems = "center";
+      li.style.justifyContent = "space-between";
+      li.style.gap = "8px";
+      li.style.padding = "4px 0";
+      li.style.borderBottom = "1px solid #333";
+
+      // Game icon
+      let img = document.createElement("img");
+      img.src = mediaBaseUrl + g.ImageIcon;
+      img.alt = g.Title;
+      img.style.width = "32px";
+      img.style.height = "32px";
+      img.style.borderRadius = "4px";
+
+      // Title
+      let titleSpan = document.createElement("span");
+      titleSpan.textContent = g.Title;
+      titleSpan.style.flexGrow = "1";
+
+      // Progress highlight
+      let progressSpan = document.createElement("span");
+      progressSpan.innerHTML = `<strong style="color:#ffcc00">${g.NumAwarded}/${g.MaxPossible} Achievements</strong>`;
+      progressSpan.style.whiteSpace = "nowrap";
+
+      li.appendChild(img);
+      li.appendChild(titleSpan);
+      li.appendChild(progressSpan);
+      progressList.appendChild(li);
+    });
+
+  } catch (err) {
+    console.error(err);
+    document.getElementById("ra-points").innerText = "⚠️ Error loading data.";
+  }
+}
+
+fetchData();
+</script>
