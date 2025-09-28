@@ -10,25 +10,16 @@
 </div>
 
 <script>
-const apiKey = "AIzaSyDOkALkr1QQuP5t1tVXVbtyZWLjLE7mtCA";
-const channelId = "UCLd7iswJ7rlNnOoHpIL1aMw";
-
 let nextPageToken = "";
 let prevPageTokens = [];
 let currentToken = ""; // Track the current page
 
 async function fetchUploadsPage(pageToken = "") {
-  let res = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channelId}&key=${apiKey}`);
-  let data = await res.json();
-  const uploadsPlaylistId = data.items[0].contentDetails.relatedPlaylists.uploads;
+  let url = `/api/youtube${pageToken ? `?pageToken=${pageToken}` : ''}`;
+  let res = await fetch(url);
+  let playlistData = await res.json();
 
-  let url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploadsPlaylistId}&maxResults=10&key=${apiKey}`;
-  if(pageToken) url += `&pageToken=${pageToken}`;
-
-  let playlistRes = await fetch(url);
-  let playlistData = await playlistRes.json();
-
-  // Store current token for prev page navigation
+  // Store current token for previous page
   if (pageToken) prevPageTokens.push(currentToken);
   currentToken = pageToken;
   nextPageToken = playlistData.nextPageToken || "";
@@ -78,9 +69,7 @@ fetchUploadsPage();
 
 // Next Page button
 document.getElementById("nextPage").addEventListener("click", () => {
-  if(nextPageToken) {
-    fetchUploadsPage(nextPageToken);
-  }
+  if(nextPageToken) fetchUploadsPage(nextPageToken);
 });
 
 // Previous Page button
@@ -91,4 +80,5 @@ document.getElementById("prevPage").addEventListener("click", () => {
   }
 });
 </script>
+
 
