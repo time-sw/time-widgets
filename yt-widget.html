@@ -1,9 +1,11 @@
-<div id="yt-widget" style="font-family:Arial, sans-serif; background:#1c1c1c; color:#fff; padding:15px; border-radius:10px; width:450px;">
-  <h2 style="color:#ffcc00; text-align:center;">tiempo_videojuegos</h2>
-  <ul id="yt-videos" style="list-style:none; padding:0; margin:0; max-height:400px; overflow-y:auto;"></ul>
-  <div style="text-align:center; margin-top:10px;">
-    <button id="prevPage" style="margin-right:10px;">Previous</button>
-    <button id="nextPage">Next</button>
+<div style="display:flex; justify-content:center; margin-top:20px;">
+  <div id="yt-widget" style="font-family:Arial, sans-serif; background:#1c1c1c; color:#fff; padding:15px; border-radius:10px; width:408px;">
+    <h2 style="color:#ffcc00; text-align:center;">@tiempo_videojuegos Videos</h2>
+    <ul id="yt-videos" style="list-style:none; padding:0; margin:0; max-height:500px; overflow-y:auto;"></ul>
+    <div style="text-align:center; margin-top:10px;">
+      <button id="prevPage" style="margin-right:10px;">Previous</button>
+      <button id="nextPage">Next</button>
+    </div>
   </div>
 </div>
 
@@ -14,12 +16,10 @@ let nextPageToken = "";
 let prevPageTokens = [];
 
 async function fetchUploadsPage(pageToken = "") {
-  // Step 1: Get the uploads playlist ID
   let res = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channelId}&key=${apiKey}`);
   let data = await res.json();
   const uploadsPlaylistId = data.items[0].contentDetails.relatedPlaylists.uploads;
 
-  // Step 2: Fetch videos from the playlist
   let url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploadsPlaylistId}&maxResults=10&key=${apiKey}`;
   if(pageToken) url += `&pageToken=${pageToken}`;
 
@@ -40,7 +40,7 @@ function displayVideos(videos) {
     li.style.alignItems = "center";
     li.style.gap = "10px";
     li.style.marginBottom = "8px";
-    li.style.color = "#fff"; // White letters
+    li.style.color = "#fff";
 
     const img = document.createElement("img");
     img.src = item.snippet.thumbnails.default.url;
@@ -53,7 +53,7 @@ function displayVideos(videos) {
     a.href = `https://www.youtube.com/watch?v=${item.snippet.resourceId.videoId}`;
     a.target = "_blank";
     a.textContent = item.snippet.title;
-    a.style.color = "#fff"; // White letters
+    a.style.color = "#fff";
     a.style.textDecoration = "none";
     a.style.flexGrow = "1";
 
@@ -63,10 +63,8 @@ function displayVideos(videos) {
   });
 }
 
-// Initial load
 fetchUploadsPage();
 
-// Pagination buttons
 document.getElementById("nextPage").addEventListener("click", () => {
   if(nextPageToken) {
     prevPageTokens.push(nextPageToken);
