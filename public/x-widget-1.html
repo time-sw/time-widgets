@@ -1,6 +1,7 @@
 <div style="display:flex; justify-content:center; margin-top:20px;">
-  <div id="x-widget" style="font-family:Arial,sans-serif; background:#111; color:#fff; padding:15px; border-radius:10px; width:408px;">
-    <h2 style="margin-top:0; margin-bottom:12px; color:#1DA1F2; text-align:center;">Latest Posts</h2>
+  <div id="x-widget"
+       style="font-family:Arial,sans-serif; background:#111; color:#fff; padding:15px; border-radius:10px; width:408px;">
+    <h2 style="margin-top:0; margin-bottom:12px; color:#1DA1F2; text-align:center;">Twitter Posts</h2>
     <ul id="x-posts" style="padding-left:0; list-style:none; margin:0;"></ul>
   </div>
 </div>
@@ -15,7 +16,7 @@ async function fetchTweets() {
     list.innerHTML = "";
 
     if (!data.data) {
-      list.innerHTML = "<li>⚠️ No tweets found.</li>";
+      list.innerHTML = "<li>⚠️ No posts available.</li>";
       return;
     }
 
