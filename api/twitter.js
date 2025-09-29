@@ -1,7 +1,7 @@
 // pages/api/twitter.js
 export default async function handler(req, res) {
   const bearerToken = process.env.X_BEARER_TOKEN; // add this in Vercel env
-  const username = "your_x_username"; // change this to your handle
+  const username = "time_sweeper"; // change this to your handle
 
   try {
     // First: resolve user ID from username
