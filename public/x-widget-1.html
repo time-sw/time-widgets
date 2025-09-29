@@ -1,8 +1,18 @@
 <div style="display:flex; justify-content:center; margin-top:20px;">
-  <div id="x-widget"
-       style="font-family:Arial,sans-serif; background:#111; color:#fff; padding:15px; border-radius:10px; width:408px;">
-    <h2 style="margin-top:0; margin-bottom:12px; color:#1DA1F2; text-align:center;">Twitter Posts</h2>
-    <ul id="x-posts" style="padding-left:0; list-style:none; margin:0;"></ul>
+  <div id="x-widget" style="font-family:Arial, sans-serif; background:#1c1c1c; color:#fff; padding:15px; border-radius:10px; width:408px; text-align:center;">
+    
+    <!-- Header: Profile picture + username -->
+    <div style="display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:12px;">
+      <a href="https://x.com/time_sweeper" target="_blank" style="display:flex; align-items:center; gap:10px; text-decoration:none;">
+        <img src="https://unavatar.io/twitter/time_sweeper"
+             alt="@time_sweeper"
+             style="width:50px; height:50px; border-radius:50%; border:2px solid #1DA1F2;">
+        <span style="font-size:18px; font-weight:bold; color:#1DA1F2;">@time_sweeper</span>
+      </a>
+    </div>
+
+    <!-- Tweets list -->
+    <ul id="x-posts" style="list-style:none; padding:0; margin:0; max-height:500px; overflow-y:auto; text-align:left;"></ul>
   </div>
 </div>
 
@@ -12,34 +22,23 @@ async function fetchTweets() {
     const res = await fetch("/api/twitter");
     const data = await res.json();
 
-    const list = document.getElementById("x-posts");
-    list.innerHTML = "";
+    const tweetList = document.getElementById("x-posts");
+    tweetList.innerHTML = "";
 
-    if (!data.data) {
-      list.innerHTML = "<li>⚠️ No posts available.</li>";
-      return;
-    }
-
-    data.data.forEach(t => {
+    data.data.forEach(tweet => {
       const li = document.createElement("li");
-      li.style.marginBottom = "12px";
-      li.style.padding = "10px";
-      li.style.border = "1px solid #333";
-      li.style.borderRadius = "8px";
-      li.style.background = "#222";
+      li.style.borderBottom = "1px solid #333";
+      li.style.padding = "10px 0";
 
-      const text = document.createElement("p");
-      text.textContent = t.text;
-      text.style.margin = "0 0 6px";
+      const p = document.createElement("p");
+      p.textContent = tweet.text;
+      p.style.margin = "0";
+      p.style.color = "#fff";
 
-      const date = document.createElement("small");
-      date.textContent = new Date(t.created_at).toLocaleString();
-      date.style.color = "#aaa";
-
-      li.appendChild(text);
-      li.appendChild(date);
-      list.appendChild(li);
+      li.appendChild(p);
+      tweetList.appendChild(li);
     });
+
   } catch (err) {
     console.error(err);
     document.getElementById("x-posts").innerHTML = "<li>⚠️ Error loading posts.</li>";
